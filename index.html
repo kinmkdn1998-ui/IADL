@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-IADL 검사 - 경일신경과 내과</title>
+    <style>
+        :root { --primary: #2e7d32; --bg: #f8fbf8; }
+        body { font-family: 'Pretendard', -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #eee; }
+        .header { background: var(--primary); color: white; padding: 25px 15px; text-align: center; }
+        .header h1 { margin: 0; font-size: 1.3rem; }
+        .content { padding: 15px; }
+        .patient-info { margin-bottom: 20px; padding: 15px; background: #f1f8e9; border-radius: 10px; }
+        .q-card { margin-bottom: 20px; border-bottom: 1px solid #f0f0f0; padding-bottom: 15px; }
+        .q-title { font-weight: bold; font-size: 1rem; color: var(--primary); margin-bottom: 12px; display: block; line-height: 1.4; }
+        .options { display: grid; grid-template-columns: 1fr; gap: 8px; }
+        .opt { display: flex; align-items: center; padding: 12px; border: 1px solid #eee; border-radius: 8px; cursor: pointer; font-size: 0.95rem; transition: 0.2s; }
+        .opt:hover { background: #f9fff9; border-color: var(--primary); }
+        .opt input { margin-right: 12px; width: 20px; height: 20px; flex-shrink: 0; }
+        .na-opt { color: #888; border-style: dashed; }
+        .btn-submit { background: var(--primary); color: white; border: none; width: 100%; padding: 20px; border-radius: 10px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        footer { text-align: center; padding: 20px; color: #999; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>K-IADL (도구적 일상생활능력)</h1>
+        <p>경일신경과 내과 임상심리실</p>
+    </div>
+
+    <form action="https://formspree.io/f/mojpwjlv" method="POST" id="iadl-form">
+        <div class="content">
+            <div class="patient-info">
+                <label style="font-weight:bold; display:block; margin-bottom:8px;">환자 식별 정보 (성함 앞글자 또는 환자번호)</label>
+                <input type="text" name="환자_식별" required placeholder="예: 김*철 / 12345" style="width:100%; padding:12px; border:1px solid #ccc; border-radius:5px; box-sizing:border-box; font-size: 1rem;">
+            </div>
+
+            <div id="questions-list">
+                </div>
+
+            <input type="hidden" name="합계_점수" id="hidden-score">
+            
+            <button type="submit" class="btn-submit">평가 완료 및 병원 전송</button>
+        </div>
+    </form>
+    <footer>© 경일신경과 내과 | 대구광역시 남구 | 053-652-2525</footer>
+</div>
+
+<script>
+    const questions = [
+        "몸단장 (세수, 양치, 머리빗기 등)",
+        "집안일 (청소, 설거지, 정리정돈 등)",
+        "음식 준비하기 (식사 준비 및 조리)",
+        "빨래하기 (세탁기 사용 및 널기)",
+        "근거리 외출 (가까운 곳 혼자 찾아가기)",
+        "교통수단 이용 (버스, 지하철, 택시 등)",
+        "물건 사기 (장보기 및 돈 계산)",
+        "돈 관리 (은행 업무, 공과금 납부 등)",
+        "전화 사용하기 (번호 찾기, 통화 걸기)",
+        "약 복용하기 (시간 맞춰 스스로 챙기기)",
+        "혼자 집에 있기 (위험 대처 및 가전 사용)"
+    ];
+
+    const container = document.getElementById('questions-list');
+
+    // 11문항 생성 로직
+    questions.forEach((q, i) => {
+        const n = i + 1;
+        const qKey = q.split(' ')[0]; // 이메일에서 짧게 보일 이름
+        container.innerHTML += `
+            <div class="q-card">
+                <span class="q-title">${n}. ${q}</span>
+                <div class="options">
+                    <label class="opt"><input type="radio" name="Q${n}_${qKey}" value="0" required> 0: 혼자서 잘함</label>
+                    <label class="opt"><input type="radio" name="Q${n}_${qKey}" value="1"> 1: 약간의 도움 필요</label>
+                    <label class="opt"><input type="radio" name="Q${n}_${qKey}" value="2"> 2: 많은 도움 필요</label>
+                    <label class="opt"><input type="radio" name="Q${n}_${qKey}" value="3"> 3: 전적으로 도움 필요</label>
+                    <label class="opt na-opt"><input type="radio" name="Q${n}_${qKey}" value="N/A"> N/A: 해당 사항 없음</label>
+                </div>
+            </div>
+        `;
+    });
+
+    // 제출 시 점수 자동 계산
+    document.getElementById('iadl-form').onsubmit = function() {
+        let sum = 0;
+        let count = 0;
+        const selected = document.querySelectorAll('input[type="radio"]:checked');
+        
+        selected.forEach(r => {
+            if(r.value !== "N/A") {
+                sum += parseInt(r.value);
+                count++;
+            }
+        });
+        
+        // 이메일 본문에 찍힐 합계 정보
+        document.getElementById('hidden-score').value = `${sum}점 (응답 문항수: ${count}/11)`;
+        return true;
+    };
+</script>
+
+</body>
+</html>
