@@ -6,7 +6,7 @@
     <title>K-IADL 평가 - 경일신경과내과의원</title>
     <style>
         :root { --primary: #2e7d32; --bg: #f8fbf8; }
-        body { font-family: 'Pretendard', sans-serif; background: var(--bg); margin: 0; padding: 10px; color: #333; }
+        body { font-family: 'Pretendard', -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; color: #333; }
         .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #eee; }
         .header { background: var(--primary); color: white; padding: 25px 15px; text-align: center; }
         .header h1 { margin: 0; font-size: 1.4rem; margin-bottom: 8px; }
@@ -15,11 +15,11 @@
         .patient-info { margin-bottom: 25px; padding: 15px; background: #f1f8e9; border-radius: 10px; }
         .q-card { margin-bottom: 25px; border-bottom: 1px solid #f0f0f0; padding-bottom: 20px; }
         .q-title { font-weight: bold; font-size: 1.05rem; color: #1b5e20; margin-bottom: 12px; display: block; line-height: 1.5; }
-        .opt { display: flex; align-items: center; padding: 12px; border: 1px solid #eee; border-radius: 8px; cursor: pointer; font-size: 0.95rem; margin-bottom: 8px; }
-        .opt:hover { background: #f1f8e9; }
+        .opt { display: flex; align-items: center; padding: 12px; border: 1px solid #eee; border-radius: 8px; cursor: pointer; font-size: 0.95rem; margin-bottom: 8px; transition: 0.2s; }
+        .opt:hover { background: #f1f8e9; border-color: var(--primary); }
         .opt input { margin-right: 12px; width: 20px; height: 20px; flex-shrink: 0; }
-        .btn-submit { background: var(--primary); color: white; border: none; width: 100%; padding: 20px; border-radius: 12px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        footer { text-align: center; padding: 20px; color: #999; font-size: 0.8rem; border-top: 1px solid #eee; }
+        .btn-submit { background: var(--primary); color: white; border: none; width: 100%; padding: 20px; border-radius: 12px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        footer { text-align: center; padding: 25px; color: #999; font-size: 0.8rem; border-top: 1px solid #eee; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -30,7 +30,7 @@
         <p>경일신경과내과 임상심리실</p>
     </div>
 
-    <form action="https://formspree.io/f/mojpwjlv" method="POST" id="iadl-form">
+    <form action="https://docs.google.com/forms/d/e/1FAIpQLSfp0IAB9o2hqRHyUQxK68WqZfyXgibQIt7Tc8WhQjVOQTc5aw/formResponse" method="POST" id="iadl-form">
         <div class="content">
             <div class="notice-box">
                 <strong>💡 작성 안내</strong><br>
@@ -40,22 +40,26 @@
 
             <div class="patient-info">
                 <label style="font-weight:bold; display:block; margin-bottom:8px;">환자 식별 정보 (성함/번호)</label>
-                <input type="text" name="00_환자식별" required placeholder="예: 김*철 / 12345" style="width:100%; padding:12px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box;">
+                <input type="text" name="entry.1666699313" required placeholder="예: 김*철 / 12345" style="width:100%; padding:12px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; font-size: 1rem;">
             </div>
 
-            <div id="questions-list"></div>
+            <div id="questions-list">
+                </div>
 
-            <input type="hidden" name="Z1_총점" id="hidden-total">
-            <input type="hidden" name="Z2_유효문항수" id="hidden-count">
-            <input type="hidden" name="Z3_평균점수(최종)" id="hidden-mean">
-
-            <button type="submit" class="btn-submit">평가 완료 및 병원 전송</button>
+            <input type="hidden" name="entry.1119565578" id="hidden-total"> <input type="hidden" name="entry.1011500366" id="hidden-mean"> <button type="submit" class="btn-submit">평가 완료 및 병원 전송</button>
         </div>
     </form>
-    <footer>경일신경과 내과 | 053-652-2525</footer>
+    <footer>경일신경과내과의원 | 053-652-2525</footer>
 </div>
 
 <script>
+    // 각 문항별 구글 폼 entry ID 매칭
+    const entryIDs = [
+        "entry.1044321356", "entry.1746200230", "entry.1102927906", "entry.1646271921", 
+        "entry.1226154944", "entry.752316496", "entry.340919290", "entry.1287957790", 
+        "entry.156551828", "entry.1989025287", "entry.195027581"
+    ];
+
     const questions = [
         "시장보기, 쇼핑: 상점에 가서 계획한 물건들을 잊지 않으며 돈 계산 실수 없이 구매합니까?",
         "교통수단 이용: 대중교통을 이용하거나 스스로 운전해 길을 잃지 않고 목적지에 갑니까?",
@@ -73,17 +77,15 @@
     const container = document.getElementById('questions-list');
 
     questions.forEach((q, i) => {
-        const n = (i + 1).toString().padStart(2, '0'); // 01, 02...
-        const qTitle = q.split(':')[0];
         container.innerHTML += `
             <div class="q-card">
                 <span class="q-title">${i+1}. ${q}</span>
                 <div class="options">
-                    <label class="opt"><input type="radio" name="${n}_${qTitle}" value="0" required> 0: 혼자서 잘함</label>
-                    <label class="opt"><input type="radio" name="${n}_${qTitle}" value="1"> 1: 약간의 도움 필요</label>
-                    <label class="opt"><input type="radio" name="${n}_${qTitle}" value="2"> 2: 많은 도움 필요</label>
-                    <label class="opt"><input type="radio" name="${n}_${qTitle}" value="3"> 3: 전적으로 도움 필요</label>
-                    <label class="opt" style="color:#888;"><input type="radio" name="${n}_${qTitle}" value="N/A"> 해당 없음</label>
+                    <label class="opt"><input type="radio" name="${entryIDs[i]}" value="0" required> 0: 혼자서 잘함</label>
+                    <label class="opt"><input type="radio" name="${entryIDs[i]}" value="1"> 1: 약간의 도움 필요</label>
+                    <label class="opt"><input type="radio" name="${entryIDs[i]}" value="2"> 2: 많은 도움 필요</label>
+                    <label class="opt"><input type="radio" name="${entryIDs[i]}" value="3"> 3: 전적으로 도움 필요</label>
+                    <label class="opt" style="color:#888;"><input type="radio" name="${entryIDs[i]}" value="N/A"> 해당 없음 (평가 불가)</label>
                 </div>
             </div>
         `;
@@ -101,13 +103,14 @@
             }
         });
 
+        // 평균 점수 계산 (선생님이 주신 공식: 총점 / (11-NA))
         let meanScore = validCount > 0 ? (sum / validCount).toFixed(2) : "0.00";
 
-        document.getElementById('hidden-total').value = sum + " 점";
-        document.getElementById('hidden-count').value = validCount + " 개";
-        document.getElementById('hidden-mean').value = meanScore + " 점";
+        // 구글 폼의 총점/평균점수 필드에 값 주입
+        document.getElementById('hidden-total').value = sum;
+        document.getElementById('hidden-mean').value = meanScore;
         
-        return true;
+        return true; 
     };
 </script>
 
