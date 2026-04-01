@@ -15,10 +15,12 @@
         .patient-info { margin-bottom: 25px; padding: 15px; background: #f1f8e9; border-radius: 10px; }
         .q-card { margin-bottom: 25px; border-bottom: 1px solid #f0f0f0; padding-bottom: 20px; }
         .q-title { font-weight: bold; font-size: 1.05rem; color: #1b5e20; margin-bottom: 12px; display: block; line-height: 1.5; }
-        .opt { display: flex; align-items: center; padding: 12px; border: 1px solid #eee; border-radius: 8px; cursor: pointer; font-size: 0.95rem; margin-bottom: 8px; }
+        .opt { display: flex; align-items: center; padding: 12px; border: 1px solid #eee; border-radius: 8px; cursor: pointer; font-size: 0.95rem; margin-bottom: 8px; transition: 0.2s; }
+        .opt:hover { background: #f1f8e9; }
         .opt input { margin-right: 12px; width: 20px; height: 20px; flex-shrink: 0; }
         .btn-submit { background: var(--primary); color: white; border: none; width: 100%; padding: 20px; border-radius: 12px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        footer { text-align: center; padding: 20px; color: #999; font-size: 0.8rem; border-top: 1px solid #eee; }
+        .hospital-footer { text-align: center; padding: 30px 15px; color: #666; font-size: 0.85rem; border-top: 1px solid #eee; background: #fafafa; line-height: 1.6; }
+        .hospital-name { font-weight: bold; color: #333; font-size: 1rem; margin-bottom: 5px; display: block; }
     </style>
 </head>
 <body>
@@ -49,11 +51,14 @@
             <button type="submit" class="btn-submit">평가 완료 및 병원 전송</button>
         </div>
     </form>
-    <footer>경일신경과내과의원 | 053-652-2525</footer>
+
+    <div class="hospital-footer">
+        <span class="hospital-name">경일신경과내과의원</span>
+        대표전화: 053-652-2525
+    </div>
 </div>
 
 <script>
-    // 주신 링크에서 추출한 진짜 문항별 ID들
     const entryIDs = [
         "entry.2124259223", "entry.582253665", "entry.635230924", "entry.1785643366", 
         "entry.1869049700", "entry.1511138627", "entry.1135273802", "entry.1383315405", 
@@ -61,8 +66,17 @@
     ];
 
     const questions = [
-        "시장보기, 쇼핑", "교통수단 이용", "돈 관리", "집안일 하기", "음식 준비",
-        "전화 사용", "약 복용", "최근 기억", "취미 생활", "텔레비전 시청", "집안 수리"
+        "시장보기, 쇼핑: 상점에 가서 계획한 물건들을 잊지 않으며 돈 계산 실수 없이 구매합니까?",
+        "교통수단 이용: 대중교통을 이용하거나 스스로 운전해 길을 잃지 않고 목적지에 갑니까?",
+        "돈 관리: 용돈을 관리하고, 은행에 가서 저축을 하는 등 돈과 관련된 일을 처리합니까?",
+        "집안일 하기, 기구 사용: 진공청소기, 다리미 등의 기구들을 잘 다루며 일상적인 집안일을 예전처럼 말끔하게 합니까?",
+        "음식 준비: 적절한 식사를 계획하여 재료를 준비하고, 예전과 같이 맛있게 음식을 만듭니까?",
+        "전화 사용: 필요한 전화번호를 수첩에서 찾거나 기억하여 전화를 겁니까?",
+        "약 복용: 시간과 용량을 지켜 약을 먹습니까?",
+        "최근 기억: 약속, 어제의 일 또는 다른 사람에게 전달해야 할 내용 등을 기억합니까?",
+        "취미 생활: 종교, 독서, 바둑, 장기, 화투, 산책, 운동 등의 예전에 하던 취미를 그대로 합니까?",
+        "텔레비전 시청: 집중해서 텔레비전을 보며 그 내용을 이해합니까?",
+        "집안 수리: 못 박기나 전구 끼우기 같은 집안 잡일을 수행합니까?"
     ];
 
     const container = document.getElementById('questions-list');
@@ -76,7 +90,7 @@
                     <label class="opt"><input type="radio" name="${entryIDs[i]}" value="1"> 1: 약간의 도움 필요</label>
                     <label class="opt"><input type="radio" name="${entryIDs[i]}" value="2"> 2: 많은 도움 필요</label>
                     <label class="opt"><input type="radio" name="${entryIDs[i]}" value="3"> 3: 전적으로 도움 필요</label>
-                    <label class="opt" style="color:#888;"><input type="radio" name="${entryIDs[i]}" value="N/A"> 해당 없음</label>
+                    <label class="opt" style="color:#888;"><input type="radio" name="${entryIDs[i]}" value="N/A"> 해당 없음 (젊어서부터 안 함)</label>
                 </div>
             </div>
         `;
